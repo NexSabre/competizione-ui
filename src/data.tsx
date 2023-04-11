@@ -3,38 +3,52 @@ enum DurationUnit {
   HOURS = "hours",
 }
 
-interface SummaryData {
+export interface ISummaryData {
   total: number;
-  unit: DurationUnit;
+  unit: DurationUnit | string;
 }
 
-interface ActivityData {
+export interface IActivityData {
   week: number;
   athlete_name: string;
   activity: string;
   duration: number;
-  duration_unit: DurationUnit;
+  duration_unit: DurationUnit | string;
 }
 
-interface TestData {
-  summary: SummaryData;
-  activities: ActivityData[];
+export interface ITestData {
+  summary: ISummaryData;
+  activities: IActivityData[];
 }
 
-const TestData = {
+const GetData: ITestData = {
   summary: {
     total: 1700,
     unit: "minutes",
   },
-  activites: [
+  activities: [
     {
       week: 1,
-      athelte_name: "Nex Sabre",
+      athlete_name: "Nex Sabre",
       activity: "cycling",
       duration: 30,
       duration_unit: "minutes",
     },
+    {
+      week: 1,
+      athlete_name: "Nex Sabre",
+      activity: "running",
+      duration: 10,
+      duration_unit: DurationUnit.MINUTES,
+    },
+    {
+      week: 2,
+      athlete_name: "Nex Sabre",
+      activity: "cycling",
+      duration: 10,
+      duration_unit: DurationUnit.MINUTES,
+    },
   ],
 };
 
-export default TestData;
+export default GetData;

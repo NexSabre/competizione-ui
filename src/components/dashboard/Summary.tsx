@@ -32,7 +32,7 @@ const DashboardSummary = () => {
     <Card style={{ marginTop: "100px" }}>
       <CardMedia
         component={"img"}
-        image="/public/cycle.jpeg"
+        image="/cycle.jpeg"
         alt="summary image"
         height="140px"
       />
