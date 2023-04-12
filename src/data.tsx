@@ -1,6 +1,5 @@
 enum DurationUnit {
   MINUTES = "minutes",
-  HOURS = "hours",
 }
 
 export interface ISummaryData {
@@ -17,35 +16,44 @@ export interface IActivityData {
 }
 
 export interface ITestData {
-  summary: ISummaryData;
   activities: IActivityData[];
 }
 
 const GetData: ITestData = {
-  summary: {
-    total: 1700,
-    unit: "minutes",
-  },
   activities: [
     {
       week: 1,
-      athlete_name: "Nex Sabre",
+      athlete_name: "Miguel",
       activity: "cycling",
       duration: 30,
-      duration_unit: "minutes",
+      duration_unit: DurationUnit.MINUTES,
     },
     {
       week: 1,
-      athlete_name: "Nex Sabre",
+      athlete_name: "Miguel",
       activity: "running",
       duration: 10,
       duration_unit: DurationUnit.MINUTES,
     },
     {
+      week: 1,
+      athlete_name: "Ivan",
+      activity: "running",
+      duration: 23,
+      duration_unit: DurationUnit.MINUTES,
+    },
+    {
       week: 2,
-      athlete_name: "Nex Sabre",
+      athlete_name: "Miguel",
       activity: "cycling",
       duration: 10,
+      duration_unit: DurationUnit.MINUTES,
+    },
+    {
+      week: 2,
+      athlete_name: "Ernie",
+      activity: "cycling",
+      duration: 40,
       duration_unit: DurationUnit.MINUTES,
     },
   ],

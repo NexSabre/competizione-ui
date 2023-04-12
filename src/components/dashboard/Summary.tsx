@@ -1,35 +1,32 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  LinearProgress,
-  LinearProgressProps,
-  Typography,
-} from "@mui/material";
-
-const LinearProgressWithLabel = (
-  props: LinearProgressProps & { value: number }
-) => {
-  return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
-      </Box>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value
-        )}%`}</Typography>
-      </Box>
-    </Box>
-  );
-};
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import LinearProgressWithLabelAndMinutes, {
+  LinearProgressWithLabel,
+} from "../LinearProgressWithLabel";
+import GetData, { IActivityData } from "../../data";
 
 const DashboardSummary = () => {
-  const wProgress: number = (1 / 8) * 100;
+  const MAX_WEEK: number = 8;
+  const data = GetData;
+
+  const getTotalTime = () => {
+    let totalTime: number = 0;
+    Object.entries(data.activities).forEach((e: any) => {
+      totalTime += (e[1] as IActivityData).duration;
+    });
+    return totalTime;
+  };
+
+  const getTotalWeeks = () => {
+    let totalWeeks: any = [];
+    Object.entries(data.activities).forEach((e: any) => {
+      totalWeeks.push((e[1] as IActivityData).week);
+    });
+    console.log(totalWeeks);
+    return Math.max(...totalWeeks);
+  };
 
   return (
-    <Card style={{ marginTop: "100px" }}>
+    <Card style={{ marginTop: "120px" }}>
       <CardMedia
         component={"img"}
         image="/cycle.jpeg"
@@ -37,17 +34,17 @@ const DashboardSummary = () => {
         height="140px"
       />
       <CardContent>
-        <Typography variant="h3" color="text.secondary" gutterBottom>
+        <Typography variant="h4" color="text.secondary" gutterBottom>
           Summary
         </Typography>
         <Typography variant="h5" component="div">
-          1700 minutes total
+          {getTotalTime()} minutes total @ {getTotalWeeks()}/{MAX_WEEK} weeks
         </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          1/8 weeks
+        <Typography sx={{ mb: 1.5 }} color="text.secondary"></Typography>
+        <Typography variant="h6" style={{ fontStyle: "italic" }}>
+          "Keep on, keepin on!"
         </Typography>
-        <Typography variant="body2">"Keep on, keepin on!"</Typography>
-        <LinearProgressWithLabel value={wProgress} />
+        <LinearProgressWithLabel value={getTotalWeeks()} maxValue={MAX_WEEK} />
       </CardContent>
     </Card>
   );
