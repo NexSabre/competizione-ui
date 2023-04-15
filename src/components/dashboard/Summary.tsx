@@ -1,7 +1,5 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-import LinearProgressWithLabelAndMinutes, {
-  LinearProgressWithLabel,
-} from "../LinearProgressWithLabel";
+import { LinearProgressWithLabel } from "../LinearProgressWithLabel";
 import GetData, { IActivityData } from "../../data";
 
 const DashboardSummary = () => {
@@ -21,7 +19,7 @@ const DashboardSummary = () => {
     Object.entries(data.activities).forEach((e: any) => {
       totalWeeks.push((e[1] as IActivityData).week);
     });
-    console.log(totalWeeks);
+
     return Math.max(...totalWeeks);
   };
 
