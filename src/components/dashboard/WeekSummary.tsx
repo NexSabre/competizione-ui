@@ -1,9 +1,18 @@
-import { Typography, Grid, Divider, Card, CardContent } from "@mui/material";
+import {
+  Typography,
+  Grid,
+  Divider,
+  Card,
+  CardContent,
+  Box,
+  Button,
+} from "@mui/material";
 import GetData, { IActivityData } from "../../data";
 import LinearProgressWithLabelAndMinutes from "../LinearProgressWithLabel";
 import SchwartzianTransform from "../../schwartzianTransform";
+import { useState } from "react";
 
-const getWeekByWeekSummary = (
+const getWeekByWeekSumDuration = (
   weekData: IActivityData[]
 ): { [key: number]: number } => {
   const weekSummaryWithSumDuration: { [key: number]: number } = {};
@@ -23,6 +32,8 @@ const getWeekByWeekSummary = (
   });
   return weekSummaryWithSumDuration;
 };
+
+interface IAthleteDataPerWeek {}
 
 const getAthleteDataPerWeek = (weekData: IActivityData[]) => {
   const weekSummaryWithSumDuration: any = {};
@@ -56,14 +67,19 @@ const getAthleteDataPerWeek = (weekData: IActivityData[]) => {
 
 const WeekSummary = () => {
   const data = GetData;
-  const weekData: { [key: string]: number } = getWeekByWeekSummary(
+  const weekData: { [key: string]: number } = getWeekByWeekSumDuration(
     data.activities
   );
 
   const athleteWeekData = getAthleteDataPerWeek(data.activities);
+  const availableWeeksForDisplay: Array<string> = Object.keys(
+    athleteWeekData
+  ).map((e) => e);
 
-  const BuildWeeks = () => {
-    return Object.keys(weekData).flatMap((e) => {
+  const [showWeek, setShowWeek] = useState<number>(0);
+
+  const Week = (e: any) => {
+    const WeekElement = (weekNumber: string) => {
       return (
         <>
           <Divider
@@ -77,29 +93,35 @@ const WeekSummary = () => {
               color={"text.secondary"}
               component="div"
             >
-              Week {e}
+              Week {weekNumber}
             </Typography>
           </Divider>
           <Grid container alignItems="center">
             <Grid item xs></Grid>
             <Grid item>
               <Typography gutterBottom variant="h6" component="div">
-                Total: {weekData[e as string]} minutes
+                Total: {weekData[weekNumber as string]} minutes
               </Typography>
             </Grid>
           </Grid>
 
-          {BuildAtletes(e, weekData[e])}
+          {AthleteCards(weekNumber, weekData[weekNumber])}
         </>
       );
-    });
+    };
+    if (showWeek === 0) {
+      return WeekElement(e);
+    } else if (showWeek > 0 && showWeek === Number(e)) {
+      return WeekElement(e);
+    }
   };
 
-  const BuildAtletes = (weekNumber: any, maxMinutesPerWeek: number) => {
+  const AthleteCards = (weekNumber: any, maxMinutesPerWeek: number) => {
+    // sort a dict
     athleteWeekData[weekNumber] = SchwartzianTransform(
       athleteWeekData[weekNumber]
     );
-    console.log(athleteWeekData[weekNumber]);
+
     return Object.entries(athleteWeekData[weekNumber]).map((score: any) => {
       return (
         <>
@@ -117,7 +139,46 @@ const WeekSummary = () => {
     });
   };
 
-  return <>{BuildWeeks()}</>;
+  const AvailableWeeksActionBar: JSX.Element = (
+    <Box style={{ marginTop: 20 }}>
+      <Divider>
+        <Typography variant="h5">Available weeks</Typography>
+      </Divider>
+      <Box>
+        <Button
+          onClick={() => {
+            setShowWeek(0);
+          }}
+        >
+          show all
+        </Button>
+        {availableWeeksForDisplay.map((e) => {
+          return (
+            <>
+              <Button
+                id={e}
+                onClick={() => {
+                  setShowWeek(Number(e));
+                }}
+                variant={"outlined"}
+                style={{ marginRight: 10 }}
+              >
+                {e}
+              </Button>
+            </>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+  return (
+    <>
+      {AvailableWeeksActionBar}
+      {Object.keys(weekData).map((e) => {
+        return Week(e);
+      })}
+    </>
+  );
 };
 
 export default WeekSummary;

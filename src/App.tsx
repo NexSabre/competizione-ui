@@ -33,7 +33,7 @@ function App() {
       </AppBar>
       <Grid container spacing={3}>
         <Grid xs></Grid>
-        <Grid xs={10} style={{ minWidth: "300px" }}>
+        <Grid xs={10} style={{ minWidth: "300px", maxWidth: 1000 }}>
           <Dashboard />
         </Grid>
         <Grid xs></Grid>
