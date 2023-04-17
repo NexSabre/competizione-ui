@@ -9,6 +9,7 @@ export interface ISummaryData {
 
 export interface IActivityData {
   week: number;
+  date?: string;
   athlete_name: string;
   activity: string;
   duration: number;
@@ -26,6 +27,7 @@ const GetData: ITestData = {
       athlete_name: "Miguel",
       activity: "cycling",
       duration: 30,
+      date: "Apr 10th",
       duration_unit: DurationUnit.MINUTES,
     },
     {
