@@ -4,13 +4,35 @@ import {
   Divider,
   Card,
   CardContent,
+  CardActions,
   Box,
+  List,
+  ListItem,
+  ListItemText,
   Button,
+  Modal,
+  Fade,
 } from "@mui/material";
 import GetData, { IActivityData } from "../../data";
 import LinearProgressWithLabelAndMinutes from "../LinearProgressWithLabel";
 import SchwartzianTransform from "../../schwartzianTransform";
 import { useEffect, useState } from "react";
+
+interface IActivitiesDetailsModal {
+  week: number;
+  athlete: string;
+}
+
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+};
 
 const getWeekByWeekSumDuration = (
   weekData: IActivityData[]
@@ -69,7 +91,6 @@ const WeekSummary = () => {
   const getAthletes = () => {
     let tempAthletes: string[] = [];
     Object.keys(athleteWeekData).forEach((e) => {
-      console.log(e);
       const newAthletes = Object.keys(athleteWeekData[e]).map((e) => e);
       const athletesSet = new Set([...athletes, ...newAthletes]);
       tempAthletes = [...athletesSet];
@@ -91,6 +112,9 @@ const WeekSummary = () => {
     Object.keys(athleteWeekData).map((e: string) => e)
   );
   const [athletes, setAthletes] = useState<string[]>([]);
+
+  const [activitiesDetailsModal, showActivitiesDetailsModal] =
+    useState<IActivitiesDetailsModal | null>();
 
   useEffect(() => {
     setAthletes(getAthletes());
@@ -140,25 +164,39 @@ const WeekSummary = () => {
       athleteWeekData[weekNumber]
     );
 
-    return Object.entries(athleteWeekData[weekNumber]).map((score: any) => {
-      const AthleteCard = (
-        <Card style={{ marginBottom: 10 }} variant="outlined">
-          <CardContent>
-            <Typography variant="h4">{score[0]}</Typography>
-            <LinearProgressWithLabelAndMinutes
-              value={score[1]}
-              maxvalue={maxMinutesPerWeek}
-            />
-          </CardContent>
-        </Card>
-      );
-      return (
-        <>
-          {showAthletes && showAthletes === score[0] && AthleteCard}
-          {!showAthletes && AthleteCard}
-        </>
-      );
-    });
+    return Object.entries(athleteWeekData[weekNumber]).map(
+      (score: any, idx) => {
+        const AthleteCard = (
+          <Card style={{ marginBottom: 10 }} variant="outlined">
+            <CardContent>
+              <Typography variant="h4">{score[0]}</Typography>
+              <LinearProgressWithLabelAndMinutes
+                value={score[1]}
+                maxvalue={maxMinutesPerWeek}
+              />
+            </CardContent>
+            <CardActions>
+              <Button
+                onClick={() => {
+                  showActivitiesDetailsModal({
+                    week: weekNumber,
+                    athlete: score[0],
+                  });
+                }}
+              >
+                Show activities
+              </Button>
+            </CardActions>
+          </Card>
+        );
+        return (
+          <>
+            {showAthletes && showAthletes === score[0] && AthleteCard}
+            {!showAthletes && AthleteCard}
+          </>
+        );
+      }
+    );
   };
 
   const AvailableWeeksActionBar: JSX.Element = (
@@ -177,11 +215,11 @@ const WeekSummary = () => {
           show all
         </Button>
         {availableWeeksForDisplay &&
-          availableWeeksForDisplay.map((e) => {
+          availableWeeksForDisplay.map((e, idx: number) => {
             return (
               <>
                 <Button
-                  id={e}
+                  id={String(idx)}
                   onClick={() => {
                     setShowWeek(Number(e));
                   }}
@@ -213,10 +251,11 @@ const WeekSummary = () => {
           show all
         </Button>
         {athletes &&
-          athletes.map((e: string) => {
+          athletes.map((e: string, idx: number) => {
             return (
               <>
                 <Button
+                  id={String(idx)}
                   variant={
                     e === String(showAthletes) ? "contained" : "outlined"
                   }
@@ -240,6 +279,69 @@ const WeekSummary = () => {
         Object.keys(weekData).map((e) => {
           return Week(e);
         })}
+
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={Boolean(activitiesDetailsModal)}
+        onClose={() => {
+          showActivitiesDetailsModal(null);
+        }}
+        closeAfterTransition
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Card sx={style}>
+          <CardContent>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              {activitiesDetailsModal?.athlete} activities at week no.{" "}
+              {activitiesDetailsModal?.week}
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <List>
+                {data &&
+                  activitiesDetailsModal &&
+                  data.activities
+                    .filter((activity: IActivityData) => {
+                      return Boolean(
+                        activity.week == activitiesDetailsModal?.week &&
+                          activity.athlete_name ==
+                            activitiesDetailsModal?.athlete
+                      );
+                    })
+                    .map((e: IActivityData, idx: number) => {
+                      const primaryText: string = `${idx + 1}: ${e.activity} (${
+                        e.duration
+                      } minutes)`;
+                      return (
+                        <>
+                          {" "}
+                          <ListItem id={String(idx)}>
+                            <ListItemText
+                              primary={primaryText}
+                              secondary={e.date ? e.date : null}
+                            />
+                          </ListItem>
+                        </>
+                      );
+                    })}
+              </List>
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button
+              onClick={() => {
+                showActivitiesDetailsModal(null);
+              }}
+            >
+              Close
+            </Button>
+          </CardActions>
+        </Card>
+      </Modal>
     </>
   );
 };
