@@ -10,7 +10,7 @@ import {
 import GetData, { IActivityData } from "../../data";
 import LinearProgressWithLabelAndMinutes from "../LinearProgressWithLabel";
 import SchwartzianTransform from "../../schwartzianTransform";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const getWeekByWeekSumDuration = (
   weekData: IActivityData[]
@@ -32,8 +32,6 @@ const getWeekByWeekSumDuration = (
   });
   return weekSummaryWithSumDuration;
 };
-
-interface IAthleteDataPerWeek {}
 
 const getAthleteDataPerWeek = (weekData: IActivityData[]) => {
   const weekSummaryWithSumDuration: any = {};
@@ -67,16 +65,36 @@ const getAthleteDataPerWeek = (weekData: IActivityData[]) => {
 
 const WeekSummary = () => {
   const data = GetData;
-  const weekData: { [key: string]: number } = getWeekByWeekSumDuration(
-    data.activities
-  );
 
-  const athleteWeekData = getAthleteDataPerWeek(data.activities);
-  const availableWeeksForDisplay: Array<string> = Object.keys(
-    athleteWeekData
-  ).map((e) => e);
+  const getAthletes = () => {
+    let tempAthletes: string[] = [];
+    Object.keys(athleteWeekData).forEach((e) => {
+      console.log(e);
+      const newAthletes = Object.keys(athleteWeekData[e]).map((e) => e);
+      const athletesSet = new Set([...athletes, ...newAthletes]);
+      tempAthletes = [...athletesSet];
+    });
+
+    return tempAthletes;
+  };
 
   const [showWeek, setShowWeek] = useState<number>(0);
+  const [showAthletes, setShowAthletes] = useState<string>("");
+
+  const [weekData] = useState<{ [key: string]: number }>(
+    getWeekByWeekSumDuration(data.activities)
+  );
+  const [athleteWeekData] = useState<any>(
+    getAthleteDataPerWeek(data.activities)
+  );
+  const [availableWeeksForDisplay] = useState<string[]>(
+    Object.keys(athleteWeekData).map((e: string) => e)
+  );
+  const [athletes, setAthletes] = useState<string[]>([]);
+
+  useEffect(() => {
+    setAthletes(getAthletes());
+  }, []);
 
   const Week = (e: any) => {
     const WeekElement = (weekNumber: string) => {
@@ -97,8 +115,8 @@ const WeekSummary = () => {
             </Typography>
           </Divider>
           <Grid container alignItems="center">
-            <Grid item xs></Grid>
-            <Grid item>
+            <Grid item xs={10} />
+            <Grid item xs>
               <Typography gutterBottom variant="h6" component="div">
                 Total: {weekData[weekNumber as string]} minutes
               </Typography>
@@ -123,17 +141,21 @@ const WeekSummary = () => {
     );
 
     return Object.entries(athleteWeekData[weekNumber]).map((score: any) => {
+      const AthleteCard = (
+        <Card style={{ marginBottom: 10 }} variant="outlined">
+          <CardContent>
+            <Typography variant="h4">{score[0]}</Typography>
+            <LinearProgressWithLabelAndMinutes
+              value={score[1]}
+              maxvalue={maxMinutesPerWeek}
+            />
+          </CardContent>
+        </Card>
+      );
       return (
         <>
-          <Card>
-            <CardContent>
-              <Typography variant="h4">{score[0]}</Typography>
-              <LinearProgressWithLabelAndMinutes
-                value={score[1]}
-                maxValue={maxMinutesPerWeek}
-              />
-            </CardContent>
-          </Card>
+          {showAthletes && showAthletes === score[0] && AthleteCard}
+          {!showAthletes && AthleteCard}
         </>
       );
     });
@@ -149,34 +171,75 @@ const WeekSummary = () => {
           onClick={() => {
             setShowWeek(0);
           }}
+          variant={!showWeek ? "contained" : "outlined"}
+          style={{ marginRight: 10 }}
         >
           show all
         </Button>
-        {availableWeeksForDisplay.map((e) => {
-          return (
-            <>
-              <Button
-                id={e}
-                onClick={() => {
-                  setShowWeek(Number(e));
-                }}
-                variant={"outlined"}
-                style={{ marginRight: 10 }}
-              >
-                {e}
-              </Button>
-            </>
-          );
-        })}
+        {availableWeeksForDisplay &&
+          availableWeeksForDisplay.map((e) => {
+            return (
+              <>
+                <Button
+                  id={e}
+                  onClick={() => {
+                    setShowWeek(Number(e));
+                  }}
+                  variant={e === String(showWeek) ? "contained" : "outlined"}
+                  style={{ marginRight: 10 }}
+                >
+                  {e}
+                </Button>
+              </>
+            );
+          })}
       </Box>
     </Box>
   );
+
+  const AvailableAthletesActionBar: JSX.Element = (
+    <Box style={{ marginTop: 20 }}>
+      <Divider>
+        <Typography variant="h5">Available athletes</Typography>
+      </Divider>
+      <Box>
+        <Button
+          onClick={() => {
+            setShowAthletes("");
+          }}
+          variant={!String(showAthletes) ? "contained" : "outlined"}
+          style={{ marginRight: 10 }}
+        >
+          show all
+        </Button>
+        {athletes &&
+          athletes.map((e: string) => {
+            return (
+              <>
+                <Button
+                  variant={
+                    e === String(showAthletes) ? "contained" : "outlined"
+                  }
+                  style={{ marginRight: 10 }}
+                  onClick={() => setShowAthletes(e)}
+                >
+                  {e}
+                </Button>
+              </>
+            );
+          })}
+      </Box>
+    </Box>
+  );
+
   return (
     <>
       {AvailableWeeksActionBar}
-      {Object.keys(weekData).map((e) => {
-        return Week(e);
-      })}
+      {AvailableAthletesActionBar}
+      {weekData &&
+        Object.keys(weekData).map((e) => {
+          return Week(e);
+        })}
     </>
   );
 };

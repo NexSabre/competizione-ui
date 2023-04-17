@@ -1,4 +1,4 @@
-const SchwartzianTransform = (dictionary: { [key: string]: number }) => {
+const SchwartzianTransform = (dictionary: any) => {
   const items = Object.keys(dictionary).map((key: string) => {
     return [key, dictionary[key]];
   });

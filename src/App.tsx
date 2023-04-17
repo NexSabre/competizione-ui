@@ -1,7 +1,6 @@
 import {
   AppBar,
   Box,
-  Button,
   CssBaseline,
   Grid,
   IconButton,
@@ -32,11 +31,11 @@ function App() {
         </Toolbar>
       </AppBar>
       <Grid container spacing={3}>
-        <Grid xs></Grid>
-        <Grid xs={10} style={{ minWidth: "300px", maxWidth: 1000 }}>
+        <Grid item xs></Grid>
+        <Grid item xs={8} style={{ minWidth: "300px", maxWidth: 1000 }}>
           <Dashboard />
         </Grid>
-        <Grid xs></Grid>
+        <Grid item xs></Grid>
       </Grid>
     </Box>
   );

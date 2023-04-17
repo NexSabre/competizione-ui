@@ -6,16 +6,16 @@ import {
 } from "@mui/material";
 
 export const LinearProgressWithLabel = (
-  props: LinearProgressProps & { value: number; maxValue: number }
+  props: LinearProgressProps & { value: number; maxvalue: number }
 ) => {
-  const _maxValue: number = (props.value / props.maxValue) * 100;
+  const _maxValue: number = (props.value / props.maxvalue) * 100;
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box sx={{ width: "100%", mr: 1 }}>
         <LinearProgress
           variant="determinate"
           {...props}
-          value={(props.value / props.maxValue) * 100}
+          value={(props.value / props.maxvalue) * 100}
           style={{ height: 10 }}
         />
       </Box>
@@ -31,9 +31,9 @@ export const LinearProgressWithLabel = (
 };
 
 const LinearProgressWithLabelAndMinutes = (
-  props: LinearProgressProps & { value: number; maxValue: number }
+  props: LinearProgressProps & { value: number; maxvalue: number }
 ) => {
-  const _maxValue: number = (props.value / props.maxValue) * 100;
+  const _maxValue: number = (props.value / props.maxvalue) * 100;
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box style={{ minWidth: 200 }}>
@@ -45,7 +45,7 @@ const LinearProgressWithLabelAndMinutes = (
         <LinearProgress
           variant="determinate"
           {...props}
-          value={(props.value / props.maxValue) * 100}
+          value={(props.value / props.maxvalue) * 100}
           style={{ height: 10 }}
         />
       </Box>

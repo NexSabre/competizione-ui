@@ -42,7 +42,7 @@ const DashboardSummary = () => {
         <Typography variant="h6" style={{ fontStyle: "italic" }}>
           "Keep on, keepin on!"
         </Typography>
-        <LinearProgressWithLabel value={getTotalWeeks()} maxValue={MAX_WEEK} />
+        <LinearProgressWithLabel value={getTotalWeeks()} maxvalue={MAX_WEEK} />
       </CardContent>
     </Card>
   );
